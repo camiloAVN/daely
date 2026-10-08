@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: daely_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: daely
+      POSTGRES_PASSWORD: daely_pass
+      POSTGRES_DB: daely
+    ports:
+      - "5434:5432"
+    volumes:
+      - daely_pgdata:/var/lib/postgresql/data
+
+volumes:
+  daely_pgdata:

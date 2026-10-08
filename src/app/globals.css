@@ -1,26 +1,534 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #050505;
+  --ink-2: #0d0d0f;
+  --silver: #d9d9de;
+  --muted: #8d8d96;
+  --rose: #ff9ecb;
+  --chrome: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e9e9ee 22%,
+    #8e8e96 48%,
+    #fdfdfd 62%,
+    #b4b4bc 82%,
+    #ffffff 100%
+  );
+  --holo: linear-gradient(
+    100deg,
+    #ffd6ec 0%,
+    #e4d6ff 20%,
+    #cdeeff 40%,
+    #fff4c9 60%,
+    #ffd6ec 80%,
+    #e4d6ff 100%
+  );
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat);
+  --font-display: var(--font-bodoni);
+  --color-ink: var(--ink);
+  --color-silver: var(--silver);
+  --color-muted: var(--muted);
+  --color-rose: var(--rose);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--silver);
+  overscroll-behavior-y: none;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #ffffff;
+  color: #000;
+}
+
+/* ───────────── Fondo de escenario ───────────── */
+
+.stage-bg {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%, rgba(255, 255, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 0% 100%, rgba(255, 158, 203, 0.09), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 100% 100%, rgba(180, 200, 255, 0.08), transparent 70%),
+    var(--ink);
+}
+
+.light-rays {
+  background: conic-gradient(
+    from 180deg at 50% -10%,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.05) 8deg,
+    transparent 16deg,
+    transparent 26deg,
+    rgba(255, 255, 255, 0.04) 34deg,
+    transparent 42deg,
+    transparent 318deg,
+    rgba(255, 255, 255, 0.04) 326deg,
+    transparent 334deg,
+    transparent 344deg,
+    rgba(255, 255, 255, 0.05) 352deg,
+    transparent 360deg
+  );
+  animation: rays-sway 9s ease-in-out infinite alternate;
+  transform-origin: 50% -10%;
+}
+
+@keyframes rays-sway {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+
+/* ───────────── Texto cromado ───────────── */
+
+.chrome-text {
+  background: var(--chrome);
+  background-size: 100% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(255, 255, 255, 0.18));
+  animation: chrome-shift 5s ease-in-out infinite alternate;
+}
+
+@keyframes chrome-shift {
+  from { background-position: 50% 0%; }
+  to { background-position: 50% 100%; }
+}
+
+.holo-text {
+  background: var(--holo);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holo-move 6s linear infinite;
+}
+
+@keyframes holo-move {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
+}
+
+/* ───────────── Vinilo ───────────── */
+
+.vinyl-spin {
+  animation: spin 1.8s linear infinite;
+  will-change: transform;
+}
+
+.vinyl-spin-slow {
+  animation: spin 14s linear infinite;
+  will-change: transform;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Reflejo fijo de luz sobre el disco: no gira, como en un vinilo real */
+.vinyl-sheen {
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 35deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.22) 12deg,
+    transparent 30deg,
+    transparent 180deg,
+    rgba(255, 255, 255, 0.16) 192deg,
+    transparent 210deg
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.vinyl-glow {
+  border-radius: 9999px;
+  box-shadow:
+    0 0 60px 10px rgba(255, 255, 255, 0.08),
+    0 0 140px 40px rgba(255, 158, 203, 0.06);
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+/* ───────────── Flashes de paparazzi ───────────── */
+
+.flash {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: flash-pop 520ms ease-out forwards;
+}
+
+.flash-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.95) 8%,
+    rgba(240, 245, 255, 0.45) 22%,
+    rgba(255, 255, 255, 0.12) 42%,
+    transparent 68%
+  );
+}
+
+.flash-streak {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 220%;
+  height: 2px;
+  transform: translate(-50%, -50%) rotate(var(--r, 0deg));
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+  filter: blur(0.4px);
+}
+
+@keyframes flash-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  12% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+}
+
+.screen-flash {
+  animation: screen-flash 180ms ease-out forwards;
+}
+
+@keyframes screen-flash {
+  0% { opacity: 0; }
+  25% { opacity: 0.35; }
+  100% { opacity: 0; }
+}
+
+/* ───────────── Destellos (diamantes) ───────────── */
+
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  animation: twinkle var(--d, 3s) ease-in-out var(--delay, 0s) infinite;
+  opacity: 0;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  45% { opacity: 1; transform: scale(1) rotate(45deg); }
+  60% { opacity: 0.9; transform: scale(0.85) rotate(60deg); }
+}
+
+.glitter {
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 72% 36%, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 38% 82%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 88% 72%, rgba(255, 220, 240, 0.6), transparent),
+    radial-gradient(1px 1px at 55% 8%, rgba(220, 230, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 6% 62%, rgba(255, 255, 255, 0.5), transparent);
+  background-size: 140px 140px;
+  animation: glitter-drift 12s linear infinite;
+}
+
+@keyframes glitter-drift {
+  from { background-position: 0 0; }
+  to { background-position: 140px 280px; }
+}
+
+/* ───────────── Tarjeta del formulario ───────────── */
+
+/* El brillo del borde gira con transform (GPU) en vez de repintar el gradiente en cada cuadro */
+.chrome-frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 2rem;
+  padding: 1.5px;
+  background: #2a2a30;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 30px 80px -20px rgba(0, 0, 0, 0.9),
+    0 0 90px -10px rgba(255, 255, 255, 0.12);
+}
+
+.chrome-frame::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: max(250%, 600px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    #3a3a40,
+    #ffffff 8%,
+    #6b6b73 18%,
+    #ffd6ec 30%,
+    #2a2a30 42%,
+    #ffffff 55%,
+    #8a8a94 66%,
+    #cdeeff 78%,
+    #3a3a40
+  );
+  animation: frame-rotate 6s linear infinite;
+  will-change: transform;
+}
+
+@keyframes frame-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.chrome-frame-inner {
+  position: relative;
+  border-radius: calc(2rem - 1.5px);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.07), transparent 70%),
+    linear-gradient(180deg, rgb(20, 20, 24), rgb(6, 6, 8));
+}
+
+/* Campos */
+.glam-field {
+  position: relative;
+}
+
+.glam-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  padding: 0.6rem 0 0.7rem;
+  caret-color: var(--rose);
+}
+
+.glam-input::placeholder {
+  color: rgba(217, 217, 222, 0.28);
+  font-weight: 300;
+}
+
+.glam-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.05));
+}
+
+.glam-line::after {
+  content: "";
+  position: absolute;
+  inset: -1px 0;
+  height: 2px;
+  background: var(--holo);
+  background-size: 300% 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 0 14px rgba(255, 214, 236, 0.7);
+  animation: holo-move 4s linear infinite;
+}
+
+.glam-field:focus-within .glam-line::after {
+  transform: scaleX(1);
+}
+
+.glam-field:focus-within .glam-label {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+.glam-field[data-error="true"] .glam-line {
+  background: linear-gradient(90deg, transparent, rgba(255, 158, 203, 0.8), transparent);
+}
+
+/* Autofill de Chrome sin fondo amarillo */
+.glam-input:-webkit-autofill,
+.glam-input:-webkit-autofill:hover,
+.glam-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ───────────── Botón cromado ───────────── */
+
+.chrome-btn {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  color: #0a0a0a;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e2e2e8 35%,
+    #9d9da6 50%,
+    #f4f4f7 70%,
+    #c9c9d0 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+    0 10px 30px -8px rgba(255, 255, 255, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.25);
+  transition: transform 200ms ease, box-shadow 300ms ease;
+}
+
+.chrome-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.95) 45%,
+    rgba(255, 214, 236, 0.8) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  animation: shine-sweep 3.2s ease-in-out infinite;
+}
+
+.chrome-btn:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+    0 16px 50px -8px rgba(255, 214, 236, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.chrome-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.chrome-btn:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+@keyframes shine-sweep {
+  0%, 55% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* ───────────── Entradas animadas ───────────── */
+
+.rise {
+  opacity: 0;
+  animation: rise 900ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.fade-out {
+  animation: fade-out 700ms ease-in forwards;
+}
+
+@keyframes fade-out {
+  to { opacity: 0; visibility: hidden; }
+}
+
+.loader-exit .loader-vinyl {
+  transition: transform 700ms cubic-bezier(0.6, 0, 0.4, 1), opacity 700ms ease;
+  transform: scale(1.6);
+  opacity: 0;
+}
+
+.progress-fill {
+  animation: progress var(--dur, 3.6s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.dots::after {
+  content: "";
+  animation: dots 1.4s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+.no-callout {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Modal */
+.modal-pop {
+  animation: modal-pop 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.safe-x {
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
+
+.safe-b {
+  padding-bottom: max(4rem, calc(env(safe-area-inset-bottom) + 2.5rem));
+}
+
+/* ───────────── Celulares: menos efectos costosos ───────────── */
+
+@media (max-width: 640px) {
+  .glitter {
+    animation: none;
+  }
+  .chrome-text {
+    filter: none;
+    text-shadow: none;
+  }
+  .light-rays {
+    animation-duration: 14s;
+  }
+  .vinyl-glow {
+    box-shadow:
+      0 0 40px 6px rgba(255, 255, 255, 0.08),
+      0 0 80px 20px rgba(255, 158, 203, 0.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .vinyl-spin,
+  .vinyl-spin-slow {
+    animation: spin 6s linear infinite !important;
+  }
 }

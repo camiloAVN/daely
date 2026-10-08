@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DAELY · Lista VIP
 
-## Getting Started
+Formulario de captación de fans + dashboard privado para descargar los registros en Excel.
 
-First, run the development server:
+Stack: Next.js 16 · Zustand · Prisma 7 + PostgreSQL · Better Auth · ExcelJS
+
+## Arrancar en local
 
 ```bash
+npm install
+cp .env.example .env      # ajusta los valores (ya existe un .env de desarrollo)
+npm run db:up             # Postgres en Docker (puerto 5434)
+npm run db:migrate        # crea las tablas
+npm run db:seed           # crea el usuario admin con ADMIN_EMAIL / ADMIN_PASSWORD
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `/` → intro con el vinilo + formulario
+- `/gracias` → agradecimiento con enlaces a redes (edítalos en `src/config/social.ts`)
+- `/dashboard` → lista de registros + **Descargar Excel**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Acceso al dashboard:** mantén presionado el logo DAELY del formulario 3 segundos.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Desplegar en Vercel
 
-## Learn More
+1. Sube el proyecto a GitHub e impórtalo en [vercel.com/new](https://vercel.com/new) (detecta Next.js solo).
+2. En el proyecto de Vercel → **Storage** → **Create Database** → **Neon (Postgres)** → conéctala.
+   Esto crea `DATABASE_URL` y `DATABASE_URL_UNPOOLED` automáticamente.
+3. En **Settings → Environment Variables** agrega:
+   | Variable | Valor |
+   | --- | --- |
+   | `BETTER_AUTH_SECRET` | resultado de `openssl rand -base64 32` |
+   | `ADMIN_EMAIL` | `admin@daely.com` |
+   | `ADMIN_PASSWORD` | la contraseña del admin |
+   | `BETTER_AUTH_URL` | *(solo si usas dominio propio)* `https://tudominio.com` |
+4. Deploy. El script `vercel-build` hace todo solo: genera Prisma, aplica migraciones,
+   crea/actualiza el admin y compila.
 
-To learn more about Next.js, take a look at the following resources:
+Para cambiar la contraseña del admin: cambia `ADMIN_PASSWORD` en Vercel y haz redeploy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Seguridad
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Formulario:** campo trampa (honeypot), token firmado con tiempo mínimo de llenado,
+  máximo 5 envíos cada 10 min por IP (se guarda solo un hash del IP), validación estricta
+  en el servidor, límite de tamaño de las peticiones, y los correos repetidos no
+  sobrescriben datos ni revelan si ya existían.
+- **Login:** máximo 5 intentos cada 5 min por IP, registro público deshabilitado.
+- **Dashboard y Excel:** verifican la sesión en el servidor. Mantener presionado el logo
+  solo esconde el acceso, la protección real es el login.
+- **Encabezados:** CSP, HSTS, anti-clickjacking, nosniff, etc. (`next.config.ts`).
