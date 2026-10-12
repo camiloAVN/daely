@@ -39,7 +39,7 @@ export function IntroLoader() {
       </div>
 
       <div className="relative z-10 mt-12 flex w-56 flex-col items-center gap-4">
-        <p className="dots text-[10px] font-medium uppercase tracking-[0.5em] text-silver/70">Alfombra roja</p>
+        <p className="dots text-[10px] font-medium uppercase tracking-[0.5em] text-silver/70">DAELY</p>
         <div className="h-px w-full overflow-hidden bg-white/10">
           <div
             className="progress-fill h-full origin-left"
