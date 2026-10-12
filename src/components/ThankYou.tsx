@@ -5,14 +5,15 @@ import Link from "next/link";
 import { SOCIAL_LINKS } from "@/config/social";
 import { useAppStore } from "@/store/useAppStore";
 import { PaparazziFlashes } from "./PaparazziFlashes";
-import { InstagramIcon, SpotifyIcon, YoutubeIcon } from "./SocialIcons";
+import { InstagramIcon, PresaveIcon, SpotifyIcon, TiktokIcon } from "./SocialIcons";
 import { Sparkles } from "./Sparkles";
 import { Vinyl } from "./Vinyl";
 
 const LINKS = [
+  { name: "Presave", hint: "Guarda mi nueva canción", href: SOCIAL_LINKS.presave, Icon: PresaveIcon, glow: "rgba(255,255,255,0.55)" },
   { name: "Instagram", hint: "Sígueme", href: SOCIAL_LINKS.instagram, Icon: InstagramIcon, glow: "rgba(225,48,108,0.55)" },
+  { name: "TikTok", hint: "Sígueme", href: SOCIAL_LINKS.tiktok, Icon: TiktokIcon, glow: "rgba(37,244,238,0.5)" },
   { name: "Spotify", hint: "Escúchame", href: SOCIAL_LINKS.spotify, Icon: SpotifyIcon, glow: "rgba(30,215,96,0.5)" },
-  { name: "YouTube", hint: "Mira mis videos", href: SOCIAL_LINKS.youtube, Icon: YoutubeIcon, glow: "rgba(255,0,0,0.5)" },
 ];
 
 export function ThankYou() {

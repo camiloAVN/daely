@@ -1,8 +1,8 @@
-// TODO: reemplaza con los enlaces reales de la artista
 export const SOCIAL_LINKS = {
-  instagram: "https://www.instagram.com/",
-  spotify: "https://open.spotify.com/",
-  youtube: "https://www.youtube.com/",
+  presave: "https://found.ee/Jvph2",
+  instagram: "https://www.instagram.com/daelyoficial",
+  tiktok: "https://www.tiktok.com/@daelyoficial",
+  spotify: "https://open.spotify.com/artist/1uu6iO0DoLGkPfgKIOxHQO",
 } as const;
 
 /** Zona horaria usada para mostrar y exportar fechas */

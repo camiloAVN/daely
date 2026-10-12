@@ -10,6 +10,30 @@ export type SubmitLeadResult =
   | { ok: true }
   | { ok: false; errors: LeadErrors; message?: string; code?: "expired" | "rate_limited" };
 
+/** Errores de conexión pasajeros (pool lleno, base saturada) que vale la pena reintentar */
+function isTransient(error: unknown) {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    return ["P1001", "P1002", "P1017", "P2024", "P2034"].includes(error.code);
+  }
+  return (
+    error instanceof Prisma.PrismaClientUnknownRequestError ||
+    error instanceof Prisma.PrismaClientInitializationError ||
+    (error instanceof Error && /timeout|ECONNRESET|too many (connections|clients)/i.test(error.message))
+  );
+}
+
+/** Reintenta con espera creciente y aleatoria para que los picos de tráfico no se pierdan */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i >= attempts || !isTransient(error)) throw error;
+      await new Promise((r) => setTimeout(r, 200 * 2 ** i + Math.random() * 300));
+    }
+  }
+}
+
 /** Token firmado que el formulario pide al montarse. Sirve de trampa de tiempo contra bots. */
 export async function getFormToken() {
   return createFormToken();
@@ -45,7 +69,12 @@ export async function submitLead(
 
   // 4. Límite de envíos por IP
   const ipHash = hashIp(getClientIp(await headers()));
-  if (!(await consumeRateLimit(ipHash))) {
+  // Si la base está saturada y el conteo falla, dejamos pasar: es peor perder un registro real
+  const allowed = await consumeRateLimit(ipHash).catch((error) => {
+    console.error("consumeRateLimit", error);
+    return true;
+  });
+  if (!allowed) {
     return {
       ok: false,
       errors: {},
@@ -55,14 +84,16 @@ export async function submitLead(
   }
 
   try {
-    await prisma.lead.create({
-      data: {
-        name: data.name,
-        phone: data.phone,
-        email: data.email.toLowerCase(),
-        instagram: normalizeInstagram(data.instagram) || null,
-      },
-    });
+    await withRetry(() =>
+      prisma.lead.create({
+        data: {
+          name: data.name,
+          phone: data.phone,
+          email: data.email.toLowerCase(),
+          instagram: normalizeInstagram(data.instagram) || null,
+        },
+      }),
+    );
     return { ok: true };
   } catch (error) {
     // Correo ya registrado: respondemos igual que un éxito para no revelar qué correos

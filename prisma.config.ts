@@ -8,8 +8,11 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    // Las migraciones necesitan conexión directa (sin pooler). Neon/Vercel la expone
-    // como DATABASE_URL_UNPOOLED; en local basta con DATABASE_URL.
-    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
+    // Las migraciones necesitan conexión directa (sin pooler).
+    // DATABASE_POSTGRES_URL es la que crea Prisma Postgres en Vercel con el prefijo "DATABASE".
+    url:
+      process.env["DATABASE_URL_UNPOOLED"] ??
+      process.env["DATABASE_URL"] ??
+      process.env["DATABASE_POSTGRES_URL"],
   },
 });

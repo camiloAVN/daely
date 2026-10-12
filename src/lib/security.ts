@@ -7,8 +7,11 @@ const MIN_FILL_MS = 2_000;
 /** El token del formulario caduca a las 2 horas */
 const MAX_TOKEN_AGE_MS = 2 * 60 * 60 * 1000;
 
-/** Máximo de envíos por IP dentro de la ventana */
-const RATE_LIMIT_MAX = 5;
+/**
+ * Máximo de envíos por IP dentro de la ventana. Es generoso porque los operadores móviles
+ * y los WiFi públicos ponen a muchas personas detrás del mismo IP.
+ */
+const RATE_LIMIT_MAX = 30;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 
 function secret() {
